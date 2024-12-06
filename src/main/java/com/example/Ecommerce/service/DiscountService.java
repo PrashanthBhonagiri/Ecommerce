@@ -1,6 +1,9 @@
 package com.example.Ecommerce.service;
 
+import com.example.Ecommerce.exception.DiscountCodeAlreadyUsedException;
+import com.example.Ecommerce.exception.InvalidDiscountCodeException;
 import com.example.Ecommerce.models.DiscountCode;
+import com.example.Ecommerce.models.Order;
 import com.example.Ecommerce.repository.DiscountCodeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,4 +33,25 @@ public class DiscountService {
                 .map(discountCode -> !discountCode.getIsUsed())
                 .orElse(false);
     }
+
+    public void applyDiscount(Order order, String discountCode) throws DiscountCodeAlreadyUsedException, InvalidDiscountCodeException {
+
+        DiscountCode discount = discountCodeRepository.findByCode(discountCode)
+                .orElseThrow(() -> new InvalidDiscountCodeException("Invalid discount code: " + discountCode));
+
+        if (discount.getIsUsed()) {
+            throw new DiscountCodeAlreadyUsedException("Discount code has already been used: " + discountCode);
+        }
+
+        double discountAmount = order.getTotalAmount() * (discount.getDiscountPercentage() / 100);
+        order.setTotalAmount(order.getTotalAmount() - discountAmount);
+        order.setAppliedDiscountCode(discount);
+
+        discount.setIsUsed(true);
+        discount.setUsedAt(LocalDateTime.now());
+
+        discountCodeRepository.save(discount);
+    }
+
+
 }
