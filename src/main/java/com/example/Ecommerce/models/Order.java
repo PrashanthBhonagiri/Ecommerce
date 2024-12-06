@@ -6,8 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -24,7 +24,7 @@ public class Order {
             joinColumns = @JoinColumn(name = "order_id"),
             inverseJoinColumns = @JoinColumn(name = "item_id")
     )
-    private List<Item> items = new ArrayList<>();
+    private Set<Item> items = new HashSet<>();
     @Column(nullable = false)
     private Double totalAmount;
     @Column(nullable = false)
@@ -33,6 +33,9 @@ public class Order {
     @JoinColumn(name = "discount_code_id")
     private DiscountCode appliedDiscountCode;
 
+    public void addItem(Item item) {
+        this.items.add(item);
+    }
     @PrePersist
     protected void onCreate() {
         if (this.orderDate == null) {
