@@ -1,5 +1,6 @@
 package com.example.Ecommerce.service;
 
+import com.example.Ecommerce.config.EcommerceConfig;
 import com.example.Ecommerce.dto.AdminStats;
 import com.example.Ecommerce.models.DiscountCode;
 import com.example.Ecommerce.models.Order;
@@ -15,11 +16,15 @@ import java.util.stream.Collectors;
 public class AdminService {
     private final OrderRepository orderRepository;
     private final DiscountCodeRepository discountCodeRepository;
+    private final EcommerceConfig ecommerceConfig;
+    private final DiscountService discountService;
 
     @Autowired
-    public AdminService(OrderRepository orderRepository, DiscountCodeRepository discountCodeRepository) {
+    public AdminService(OrderRepository orderRepository, DiscountCodeRepository discountCodeRepository, EcommerceConfig ecommerceConfig, DiscountService discountService) {
         this.orderRepository = orderRepository;
         this.discountCodeRepository = discountCodeRepository;
+        this.ecommerceConfig = ecommerceConfig;
+        this.discountService = discountService;
     }
 
     public AdminStats getAdminStats() {
@@ -52,8 +57,21 @@ public class AdminService {
                 })
                 .sum());
 
-
-
         return stats;
+    }
+    public DiscountCode generateDiscountCode() {
+        if (isNthOrder()) {
+            return discountService.generateDiscountCode();
+        } else {
+            throw new IllegalStateException("Discount code can only be generated for every " + ecommerceConfig.getNthOrderDiscount() + "th order.");
+        }
+    }
+
+    private boolean isNthOrder() {
+        long orderCount = orderRepository.count();
+        if (orderCount == 0) {
+            return false;
+        }
+        return (orderCount + 1) % ecommerceConfig.getNthOrderDiscount() == 0;
     }
 }

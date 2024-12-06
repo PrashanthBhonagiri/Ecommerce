@@ -90,6 +90,6 @@ public class OrderService {
         if (orderCount == 0) {
             return false;
         }
-        return orderCount % ecommerceConfig.getNthOrderDiscount() == 0;
+        return (orderCount + 1) % ecommerceConfig.getNthOrderDiscount() == 0;
     }
 }
