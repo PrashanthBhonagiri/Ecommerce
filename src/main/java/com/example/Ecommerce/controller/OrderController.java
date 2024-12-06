@@ -1,5 +1,9 @@
 package com.example.Ecommerce.controller;
 
+import com.example.Ecommerce.exception.CartNotFoundException;
+import com.example.Ecommerce.exception.DiscountCodeAlreadyUsedException;
+import com.example.Ecommerce.exception.EmptyCartException;
+import com.example.Ecommerce.exception.InvalidDiscountCodeException;
 import com.example.Ecommerce.models.Order;
 import com.example.Ecommerce.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,5 +31,17 @@ public class OrderController {
     public ResponseEntity<Order> getOrder(@PathVariable Long orderId) {
         Order order = orderService.getOrder(orderId);
         return ResponseEntity.ok(order);
+    }
+
+    @PostMapping("/checkout")
+    public ResponseEntity<?> checkout(@RequestParam Long cartId, @RequestParam(required = false) String discountCode) {
+        try {
+            Order order = orderService.checkout(cartId, discountCode);
+            return ResponseEntity.ok(order);
+        } catch (CartNotFoundException | EmptyCartException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (InvalidDiscountCodeException | DiscountCodeAlreadyUsedException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }
