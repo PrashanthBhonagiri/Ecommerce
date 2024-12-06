@@ -1,6 +1,7 @@
 package com.example.Ecommerce.service;
 
 
+import com.example.Ecommerce.config.EcommerceConfig;
 import com.example.Ecommerce.exception.*;
 import com.example.Ecommerce.models.Cart;
 import com.example.Ecommerce.models.Item;
@@ -19,12 +20,14 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final DiscountService discountService;
+    private final EcommerceConfig ecommerceConfig;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, CartRepository cartRepository, DiscountService  discountService) {
+    public OrderService(OrderRepository orderRepository, CartRepository cartRepository, DiscountService  discountService, EcommerceConfig ecommerceConfig) {
         this.orderRepository = orderRepository;
         this.cartRepository = cartRepository;
         this.discountService = discountService;
+        this.ecommerceConfig = ecommerceConfig;
     }
 
     @Transactional
@@ -65,7 +68,7 @@ public class OrderService {
         order.setItems(new HashSet<>(cart.getItems()));
         order.setTotalAmount(cart.getTotalAmount());
 
-        if (discountCode != null && !discountCode.isEmpty()) {
+        if (discountCode != null && !discountCode.isEmpty() && isNthOrder()) {
             try {
                 discountService.applyDiscount(order, discountCode);
             } catch (InvalidDiscountCodeException | DiscountCodeAlreadyUsedException e) {
@@ -81,5 +84,12 @@ public class OrderService {
 
         return order;
 
+    }
+    private boolean isNthOrder() {
+        long orderCount = orderRepository.count();
+        if (orderCount == 0) {
+            return false;
+        }
+        return orderCount % ecommerceConfig.getNthOrderDiscount() == 0;
     }
 }
