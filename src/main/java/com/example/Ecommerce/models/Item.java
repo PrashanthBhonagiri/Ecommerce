@@ -1,6 +1,7 @@
 package com.example.Ecommerce.models;
 
 import jakarta.persistence.*;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,8 @@ public class Item {
     @Column(nullable = false)
     private String name;
 
-    @Column
+    @Column(length = 1000)
+    @Size(max = 1000, message = "Description must be no more than 1000 characters")
     private String description;
 
     @Column(nullable = false)
