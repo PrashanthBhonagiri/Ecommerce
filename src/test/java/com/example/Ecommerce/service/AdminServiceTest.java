@@ -38,12 +38,17 @@ public class AdminServiceTest {
 
     @Test
     void getAdminStats_shouldCalculateCorrectStats() {
+        Item item1 = new Item();
+        item1.setName("Item 1");
+        Item item2 = new Item();
+        item2.setName("Item 2");
+
         Order order1 = new Order();
-        order1.setItems(new HashSet<>(Arrays.asList(new Item(), new Item())));
+        order1.setItems(new HashSet<>(Arrays.asList(item1, item2)));
         order1.setTotalAmount(100.0);
 
         Order order2 = new Order();
-        order2.setItems(new HashSet<>(Arrays.asList(new Item())));
+        order2.setItems(new HashSet<>(Arrays.asList(item1)));
         order2.setTotalAmount(50.0);
 
         DiscountCode discountCode1 = new DiscountCode();
