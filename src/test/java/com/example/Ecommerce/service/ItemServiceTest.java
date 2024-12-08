@@ -27,7 +27,7 @@ public class ItemServiceTest {
     private ItemService itemService;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
@@ -91,7 +91,7 @@ public class ItemServiceTest {
         assertEquals("Item 1", items.get(0).getName());
         assertEquals("Item 2", items.get(1).getName());
         verify(itemRepository, times(1)).findAll();
-    
+
     }
 
     @Test
