@@ -1,5 +1,6 @@
 package com.example.Ecommerce.controller;
 
+import com.example.Ecommerce.exception.CartNotFoundException;
 import com.example.Ecommerce.models.Cart;
 import com.example.Ecommerce.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,21 +25,33 @@ public class CartController {
     }
 
     @PostMapping("/{cartId}/items")
-    public ResponseEntity<Cart> addItemToCart(@PathVariable Long cartId, @RequestParam Long itemId) {
-        Cart updatedCart = cartService.addItemToCart(cartId, itemId);
-        return ResponseEntity.ok(updatedCart);
+    public ResponseEntity<?> addItemToCart(@PathVariable Long cartId, @RequestParam Long itemId) {
+        try {
+            Cart updatedCart = cartService.addItemToCart(cartId, itemId);
+            return ResponseEntity.ok(updatedCart);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{cartId}/items")
-    public ResponseEntity<Cart> removeItemFromCart(@PathVariable Long cartId, @RequestParam Long itemId) {
-        Cart updatedCart = cartService.removeItemFromCart(cartId, itemId);
-        return ResponseEntity.ok(updatedCart);
+    public ResponseEntity<?> removeItemFromCart(@PathVariable Long cartId, @RequestParam Long itemId) {
+        try {
+            Cart updatedCart = cartService.removeItemFromCart(cartId, itemId);
+            return ResponseEntity.ok(updatedCart);
+        } catch (CartNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @GetMapping("/{cartId}")
-    public ResponseEntity<Cart> getCart(@PathVariable Long cartId) {
-        Cart cart = cartService.getCart(cartId);
-        return ResponseEntity.ok(cart);
+    public ResponseEntity<?> getCart(@PathVariable Long cartId) {
+        try {
+            Cart cart = cartService.getCart(cartId);
+            return ResponseEntity.ok(cart);
+        } catch (CartNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
 
