@@ -63,7 +63,7 @@ public class AdminService {
         if (isNthOrder()) {
             return discountService.generateDiscountCode();
         } else {
-            throw new IllegalStateException("Discount code can only be generated for every " + ecommerceConfig.getNthOrderDiscount() + "th order.");
+            throw new IllegalStateException("Discount code can only be generated for every " + ecommerceConfig.getNthOrderDiscount() + " order.");
         }
     }
 
