@@ -40,6 +40,9 @@ The application will start running at `http://localhost:8080`.
 
 ## API Endpoints
 
+### Home
+- GET `/` - Get a welcome message
+
 ### Items
 - GET `/api/items` - Get all items
 - GET `/api/items/{id}` - Get a specific item
